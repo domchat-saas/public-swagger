@@ -1,0 +1,1003 @@
+openapi: 3.0.3
+info:
+  title: ДомЧат - OpenAPI 3.0
+  description: |-
+    Сваггер для ДомЧата
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: faggid@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+# servers:
+#   - url: https://petstore3.swagger.io/api/v3
+tags:
+  - name: FeedService
+    description: Сервис для работы с лентой
+    externalDocs:
+      description: Документация
+      url: https://www.notion.so/FeedService-3044854f9ae64d34b9571d16beea90a7
+  - name: ChatService
+    description: Сервис для работы с чатом
+paths:
+  /chat/getChatMetadata:
+    get:
+      tags:
+        - ChatService
+      summary: Возвращает метаданные чата
+      operationId: getChatMetadata
+      parameters:
+        - name: houseGuid
+          in: query
+          description: Идентификатор дома
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 5e5e2958-3056-4255-91f7-4c4b47118013
+      responses:
+        '200':
+          description: Успешное выполнение
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChatMetadata'    
+        '401':
+          description: Требуется перезаход
+        '403':
+          description: Нет доступа к этому дому
+  /chat/getMessages:
+    get:
+      tags:
+        - ChatService
+      summary: Возвращает список сообщений в чате
+      operationId: getMessages
+      parameters:
+        - name: houseGuid
+          in: query
+          description: Идентификатор дома
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 5e5e2958-3056-4255-91f7-4c4b47118013
+        - name: limit
+          in: query
+          description: Лимит
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+          example: 0
+        - name: offset
+          in: query
+          description: Отступ
+          required: true
+          schema:
+            type: integer
+            minimum: 10
+          example: 10
+        
+      responses:
+        '200':
+          description: Успешное выполнение
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChatMessage'    
+        '401':
+          description: Требуется перезаход
+        '403':
+          description: Нет доступа к этому дому
+  /chat/createMessage:
+    post:
+      tags:
+      - ChatService
+      summary: Создает сообщение в чате
+      operationId: createMessage
+      parameters:
+        - name: houseGuid
+          in: query
+          description: Идентификатор дома
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 5e5e2958-3056-4255-91f7-4c4b47118013
+        - name: message
+          in: query
+          description: Текст сообщения
+          required: true
+          schema:
+            type: string
+          example: "Света собака"
+      responses:
+        '200':
+          description: Успешное выполнение
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatMessage'          
+        '401':
+          description: "Требуется перезаход"
+        '403':
+          description: "Нет доступа к ресурсу"
+  /chat/updateMessage:
+    patch:
+      tags:
+      - ChatService
+      summary: Редактирует сообщение в чате
+      operationId: updateMessage
+      parameters:
+        - name: houseGuid
+          in: query
+          description: Идентификатор дома
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 5e5e2958-3056-4255-91f7-4c4b47118013
+        - name: messageGuid
+          in: query
+          description: Идентификатор сообщения
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 5e5e2958-3056-4255-91f7-4c4b47118013
+        - name: message
+          in: query
+          description: Текст сообщения
+          required: true
+          schema:
+            type: string
+          example: "Света собака"
+      responses:
+        '200':
+          description: Успешное выполнение
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatMessage'          
+        '401':
+          description: "Требуется перезаход"
+        '403':
+          description: "Нет доступа к ресурсу"
+  /chat/deleteMessage:
+    delete:
+      tags:
+      - ChatService
+      summary: Удаляет сообщение в чате
+      operationId: deleteMessage
+      parameters:
+        - name: houseGuid
+          in: query
+          description: Идентификатор дома
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 5e5e2958-3056-4255-91f7-4c4b47118013
+        - name: messageGuid
+          in: query
+          description: Идентификатор сообщения
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 5e5e2958-3056-4255-91f7-4c4b47118013
+      responses:
+        '200':
+          description: Успешное выполнение         
+        '401':
+          description: "Требуется перезаход"
+        '403':
+          description: "Нет доступа к ресурсу"
+        
+  # /feed/getFeedPreviews:
+  #   get:
+  #     tags:
+  #       - feed
+  #     summary: Возвращает список превью объявлений
+  #     operationId: getFeedPreviews
+  #     parameters:
+  #       - name: feedListGuid
+  #         in: query
+  #         description: Идентификатор группы объявлений
+  #         required: true
+  #         explode: true
+  #         schema:
+  #           type: string
+  #           format: uuid
+  #         example: 5e5e2958-3056-4255-91f7-4c4b47118013
+  #       - name: limit
+  #         in: query
+  #         description: Ограничение
+  #         required: true
+  #         schema:
+  #           type: integer
+  #         example: 10
+  #       - name: offset
+  #         in: query
+  #         description: Отступ
+  #         required: true
+  #         schema:
+  #           type: integer
+  #         example: 10
+        
+  #     responses:
+  #       '200':
+  #         description: Успешное выполнение
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: array
+  #               items:
+  #                 $ref: '#/components/schemas/FeedPreview'          
+  #       '401':
+  #         description: "Требуется перезаход"
+  #       '403':
+  #         description: "Нет доступа к ресурсу"
+components:
+  schemas:
+    ChatUser:
+      type: object
+      properties:
+        guid:
+          type: string
+          format: uuid
+          description: Идентификатор внешнего пользователя
+        name:
+          type: string
+          description: Имя фамилия
+        role:
+          type: string
+          description: Роль
+        avatar:
+          type: string
+          description: Изображение пользователя
+    ChatMetadata:
+      type: object
+      properties:
+        messageCount:
+          type: integer
+          minimum: 0
+          description: Количество сообщений в чате
+        users:
+          type: array
+          description: Список пользователей в чате
+          items:
+            $ref: '#/components/schemas/ChatUser'
+    ChatMessage:
+      type: object
+      properties:
+        guid: 
+          type: string
+          format: uuid
+          description: Идентификатор сообщения
+        user:
+          nullable: true
+          allOf:
+          - $ref: '#/components/schemas/ChatUser'
+        text: 
+          type: string
+          description: Текст сообщения
+        updated_at:
+          type: string
+          format: date
+          description: Дата обновления
+          nullable: true
+        created_at:
+          type: string
+          format: date
+          description: Дата создания
+  #   FeedPreview:
+  #     type: object
+  #     required:
+  #       - feedGuid
+  #       - content
+  #       - commentCount
+  #       - likeCount
+  #       - isFavourited
+  #       - isLiked
+  #       - createdAt
+  #       - updatedAt
+  #       - attachmentList
+  #     properties:
+  #       feedGuid:
+  #         type: string
+  #         format: uuid
+  #         description: Идентификатор объявления
+  #       content:
+  #         type: string
+  #         description: Контент объявления
+  #       commentCount:
+  #         type: integer
+  #         description: Количество комментариев
+  #       likeCount:
+  #         type: integer
+  #         description: Количество лайков
+  #       isFavourited:
+  #         type: boolean
+  #         description: Объявление было добавлено в избранное
+  #       isLiked:
+  #         type: boolean
+  #         description: Объявление было лайкнуто
+  #       createdAt:
+  #         type: string
+  #         format: date
+  #         description: ISO 8601 UTC время создания
+  #       updatedAt:
+  #         type: string
+  #         format: date
+  #         description: ISO 8601 UTC время редактирования
+  #       attachmentList:
+  #         type: array
+  #         description: Список вложений
+  #         items:
+  #           type: string
+  #   GetFeedPreviewsRequest:
+  #     type: object
+  #     properties:
+  #       feedListGuid:
+  #         type: string
+  #         description: "asf"
+  #         format: UUID
+  #         example: "5e5e2958-3056-4255-91f7-4c4b47118013"
+  #       limit:
+  #         type: integer
+  #         format: int64
+  #         example: 0
+  #       offset:
+  #         type: integer
+  #         format: int32
+  #         example: 10
+  #       externalUserGuid:
+  #         type: string
+  #         format: UUID
+  #         example: "5e5e2958-3056-4255-91f7-4c4b47118013"
+  #       status:
+  #         type: string
+  #         description: Order Status
+  #         example: SUCCESS
+  #         enum:
+  #           - SUCCESS
+  #           - AUTHDATA_INCORRECT
+  #           - OBJECT_NOT_FOUND
+  #           - USER_HAS_NO_RIGHTS
+  #           - INTERNAL_ERROR
+  #           - REQUEST_INCOMPLETE
+  #     xml:
+  #       name: getFeedPreviewsRequest
+  #   Customer:
+  #     type: object
+  #     properties:
+  #       id:
+  #         type: integer
+  #         format: int64
+  #         example: 100000
+  #       username:
+  #         type: string
+  #         example: fehguy
+  #       address:
+  #         type: array
+  #         xml:
+  #           name: addresses
+  #           wrapped: true
+  #         items:
+  #           $ref: '#/components/schemas/Address'
+  #     xml:
+  #       name: customer
+  #   Address:
+  #     type: object
+  #     properties:
+  #       street:
+  #         type: string
+  #         example: 437 Lytton
+  #       city:
+  #         type: string
+  #         example: Palo Alto
+  #       state:
+  #         type: string
+  #         example: CA
+  #       zip:
+  #         type: string
+  #         example: '94301'
+  #     xml:
+  #       name: address
+  #   Category:
+  #     type: object
+  #     properties:
+  #       id:
+  #         type: integer
+  #         format: int64
+  #         example: 1
+  #       name:
+  #         type: string
+  #         example: Dogs
+  #     xml:
+  #       name: category
+  #   User:
+  #     type: object
+  #     properties:
+  #       id:
+  #         type: integer
+  #         format: int64
+  #         example: 10
+  #       username:
+  #         type: string
+  #         example: theUser
+  #       firstName:
+  #         type: string
+  #         example: John
+  #       lastName:
+  #         type: string
+  #         example: James
+  #       email:
+  #         type: string
+  #         example: john@email.com
+  #       password:
+  #         type: string
+  #         example: '12345'
+  #       phone:
+  #         type: string
+  #         example: '12345'
+  #       userStatus:
+  #         type: integer
+  #         description: User Status
+  #         format: int32
+  #         example: 1
+  #     xml:
+  #       name: user
+  #   Tag:
+  #     type: object
+  #     properties:
+  #       id:
+  #         type: integer
+  #         format: int64
+  #       name:
+  #         type: string
+  #     xml:
+  #       name: tag
+  #   Pet:
+  #     required:
+  #       - name
+  #       - photoUrls
+  #     type: object
+  #     properties:
+  #       id:
+  #         type: integer
+  #         format: int64
+  #         example: 10
+  #       name:
+  #         type: string
+  #         example: doggie
+  #       category:
+  #         $ref: '#/components/schemas/Category'
+  #       photoUrls:
+  #         type: array
+  #         xml:
+  #           wrapped: true
+  #         items:
+  #           type: string
+  #           xml:
+  #             name: photoUrl
+  #       tags:
+  #         type: array
+  #         xml:
+  #           wrapped: true
+  #         items:
+  #           $ref: '#/components/schemas/Tag'
+  #       status:
+  #         type: string
+  #         description: pet status in the store
+  #         enum:
+  #           - available
+  #           - pending
+  #           - sold
+  #     xml:
+  #       name: pet
+  #   ApiResponse:
+  #     type: object
+  #     properties:
+  #       code:
+  #         type: integer
+  #         format: int32
+  #       type:
+  #         type: string
+  #       message:
+  #         type: string
+  #     xml:
+  #       name: '##default'
+  # requestBodies:
+  #   Pet:
+  #     description: Pet object that needs to be added to the store
+  #     content:
+  #       application/json:
+  #         schema:
+  #           $ref: '#/components/schemas/Pet'
+  #       application/xml:
+  #         schema:
+  #           $ref: '#/components/schemas/Pet'
+  #   UserArray:
+  #     description: List of user object
+  #     content:
+  #       application/json:
+  #         schema:
+  #           type: array
+  #           items:
+  #             $ref: '#/components/schemas/User'
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+          scopes:
+            write:pets: modify pets in your account
+            read:pets: read your pets
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
+
+  # /comment/createComment:
+  #   post:
+  #     tags:
+  #       - pet
+  #     summary: Finds Pets by tags
+  #     description: Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.
+  #     operationId: findPetsByTags
+  #     parameters:
+  #       - name: petId
+  #         in: path
+  #         description: ID of pet that needs to be updated
+  #         required: true
+  #         schema:
+  #           type: integer
+  #           format: int64
+  #       - name: name
+  #         in: query
+  #         description: Name of pet that needs to be updated
+  #         schema:
+  #           type: string
+  #       - name: status
+  #         in: query
+  #         description: Status of pet that needs to be updated
+  #         schema:
+  #           type: string
+  #     responses:
+  #       '200':
+  #         description: successful operation
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: array
+  #               items:
+  #                 $ref: '#/components/schemas/Pet'          
+  #           application/xml:
+  #             schema:
+  #               type: array
+  #               items:
+  #                 $ref: '#/components/schemas/Pet'
+  #       '400':
+  #         description: Invalid tag value
+  #     security:
+  #       - petstore_auth:
+  #           - write:pets
+  #           - read:pets
+  # /pet/{petId}:
+  #   get:
+  #     tags:
+  #       - pet
+  #     summary: Find pet by ID
+  #     description: Returns a single pet
+  #     operationId: getPetById
+  #     parameters:
+  #       - name: petId
+  #         in: path
+  #         description: ID of pet to return
+  #         required: true
+  #         schema:
+  #           type: integer
+  #           format: int64
+  #     responses:
+  #       '200':
+  #         description: successful operation
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/Pet'          
+  #           application/xml:
+  #             schema:
+  #               $ref: '#/components/schemas/Pet'
+  #       '400':
+  #         description: Invalid ID supplied
+  #       '404':
+  #         description: Pet not found
+  #     security:
+  #       - api_key: []
+  #       - petstore_auth:
+  #           - write:pets
+  #           - read:pets
+  #   post:
+  #     tags:
+  #       - pet
+  #     summary: Updates a pet in the store with form data
+  #     description: ''
+  #     operationId: updatePetWithForm
+  #     parameters:
+  #       - name: petId
+  #         in: path
+  #         description: ID of pet that needs to be updated
+  #         required: true
+  #         schema:
+  #           type: integer
+  #           format: int64
+  #       - name: name
+  #         in: query
+  #         description: Name of pet that needs to be updated
+  #         schema:
+  #           type: string
+  #       - name: status
+  #         in: query
+  #         description: Status of pet that needs to be updated
+  #         schema:
+  #           type: string
+  #     responses:
+  #       '405':
+  #         description: Invalid input
+  #     security:
+  #       - petstore_auth:
+  #           - write:pets
+  #           - read:pets
+  #   delete:
+  #     tags:
+  #       - pet
+  #     summary: Deletes a pet
+  #     description: delete a pet
+  #     operationId: deletePet
+  #     parameters:
+  #       - name: api_key
+  #         in: header
+  #         description: ''
+  #         required: false
+  #         schema:
+  #           type: string
+  #       - name: petId
+  #         in: path
+  #         description: Pet id to delete
+  #         required: true
+  #         schema:
+  #           type: integer
+  #           format: int64
+  #     responses:
+  #       '400':
+  #         description: Invalid pet value
+  #     security:
+  #       - petstore_auth:
+  #           - write:pets
+  #           - read:pets
+  # /pet/{petId}/uploadImage:
+  #   post:
+  #     tags:
+  #       - pet
+  #     summary: uploads an image
+  #     description: ''
+  #     operationId: uploadFile
+  #     parameters:
+  #       - name: petId
+  #         in: path
+  #         description: ID of pet to update
+  #         required: true
+  #         schema:
+  #           type: integer
+  #           format: int64
+  #       - name: additionalMetadata
+  #         in: query
+  #         description: Additional Metadata
+  #         required: false
+  #         schema:
+  #           type: string
+  #     requestBody:
+  #       content:
+  #         application/octet-stream:
+  #           schema:
+  #             type: string
+  #             format: binary
+  #     responses:
+  #       '200':
+  #         description: successful operation
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/ApiResponse'
+  #     security:
+  #       - petstore_auth:
+  #           - write:pets
+  #           - read:pets
+  # /store/inventory:
+  #   get:
+  #     tags:
+  #       - store
+  #     summary: Returns pet inventories by status
+  #     description: Returns a map of status codes to quantities
+  #     operationId: getInventory
+  #     responses:
+  #       '200':
+  #         description: successful operation
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               additionalProperties:
+  #                 type: integer
+  #                 format: int32
+  #     security:
+  #       - api_key: []
+  # /store/order:
+  #   post:
+  #     tags:
+  #       - store
+  #     summary: Place an order for a pet
+  #     description: Place a new order in the store
+  #     operationId: placeOrder
+  #     requestBody:
+  #       content:
+  #         application/json:
+  #           schema:
+  #             $ref: '#/components/schemas/Order'
+  #         application/xml:
+  #           schema:
+  #             $ref: '#/components/schemas/Order'
+  #         application/x-www-form-urlencoded:
+  #           schema:
+  #             $ref: '#/components/schemas/Order'
+  #     responses:
+  #       '200':
+  #         description: successful operation
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/Order'
+  #       '405':
+  #         description: Invalid input
+  # /store/order/{orderId}:
+  #   get:
+  #     tags:
+  #       - store
+  #     summary: Find purchase order by ID
+  #     description: For valid response try integer IDs with value <= 5 or > 10. Other values will generate exceptions.
+  #     operationId: getOrderById
+  #     parameters:
+  #       - name: orderId
+  #         in: path
+  #         description: ID of order that needs to be fetched
+  #         required: true
+  #         schema:
+  #           type: integer
+  #           format: int64
+  #     responses:
+  #       '200':
+  #         description: successful operation
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/Order'          
+  #           application/xml:
+  #             schema:
+  #               $ref: '#/components/schemas/Order'
+  #       '400':
+  #         description: Invalid ID supplied
+  #       '404':
+  #         description: Order not found
+  #   delete:
+  #     tags:
+  #       - store
+  #     summary: Delete purchase order by ID
+  #     description: For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors
+  #     operationId: deleteOrder
+  #     parameters:
+  #       - name: orderId
+  #         in: path
+  #         description: ID of the order that needs to be deleted
+  #         required: true
+  #         schema:
+  #           type: integer
+  #           format: int64
+  #     responses:
+  #       '400':
+  #         description: Invalid ID supplied
+  #       '404':
+  #         description: Order not found
+  # /user:
+  #   post:
+  #     tags:
+  #       - user
+  #     summary: Create user
+  #     description: This can only be done by the logged in user.
+  #     operationId: createUser
+  #     requestBody:
+  #       description: Created user object
+  #       content:
+  #         application/json:
+  #           schema:
+  #             $ref: '#/components/schemas/User'
+  #         application/xml:
+  #           schema:
+  #             $ref: '#/components/schemas/User'
+  #         application/x-www-form-urlencoded:
+  #           schema:
+  #             $ref: '#/components/schemas/User'
+  #     responses:
+  #       default:
+  #         description: successful operation
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/User'
+  #           application/xml:
+  #             schema:
+  #               $ref: '#/components/schemas/User'
+  # /user/createWithList:
+  #   post:
+  #     tags:
+  #       - user
+  #     summary: Creates list of users with given input array
+  #     description: Creates list of users with given input array
+  #     operationId: createUsersWithListInput
+  #     requestBody:
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: array
+  #             items:
+  #               $ref: '#/components/schemas/User'
+  #     responses:
+  #       '200':
+  #         description: Successful operation
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/User'          
+  #           application/xml:
+  #             schema:
+  #               $ref: '#/components/schemas/User'
+  #       default:
+  #         description: successful operation
+  # /user/login:
+  #   get:
+  #     tags:
+  #       - user
+  #     summary: Logs user into the system
+  #     description: ''
+  #     operationId: loginUser
+  #     parameters:
+  #       - name: username
+  #         in: query
+  #         description: The user name for login
+  #         required: false
+  #         schema:
+  #           type: string
+  #       - name: password
+  #         in: query
+  #         description: The password for login in clear text
+  #         required: false
+  #         schema:
+  #           type: string
+  #     responses:
+  #       '200':
+  #         description: successful operation
+  #         headers:
+  #           X-Rate-Limit:
+  #             description: calls per hour allowed by the user
+  #             schema:
+  #               type: integer
+  #               format: int32
+  #           X-Expires-After:
+  #             description: date in UTC when token expires
+  #             schema:
+  #               type: string
+  #               format: date-time
+  #         content:
+  #           application/xml:
+  #             schema:
+  #               type: string
+  #           application/json:
+  #             schema:
+  #               type: string
+  #       '400':
+  #         description: Invalid username/password supplied
+  # /user/logout:
+  #   get:
+  #     tags:
+  #       - user
+  #     summary: Logs out current logged in user session
+  #     description: ''
+  #     operationId: logoutUser
+  #     parameters: []
+  #     responses:
+  #       default:
+  #         description: successful operation
+  # /user/{username}:
+  #   get:
+  #     tags:
+  #       - user
+  #     summary: Get user by user name
+  #     description: ''
+  #     operationId: getUserByName
+  #     parameters:
+  #       - name: username
+  #         in: path
+  #         description: 'The name that needs to be fetched. Use user1 for testing. '
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       '200':
+  #         description: successful operation
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/User'          
+  #           application/xml:
+  #             schema:
+  #               $ref: '#/components/schemas/User'
+  #       '400':
+  #         description: Invalid username supplied
+  #       '404':
+  #         description: User not found
+  #   put:
+  #     tags:
+  #       - user
+  #     summary: Update user
+  #     description: This can only be done by the logged in user.
+  #     operationId: updateUser
+  #     parameters:
+  #       - name: username
+  #         in: path
+  #         description: name that need to be deleted
+  #         required: true
+  #         schema:
+  #           type: string
+  #     requestBody:
+  #       description: Update an existent user in the store
+  #       content:
+  #         application/json:
+  #           schema:
+  #             $ref: '#/components/schemas/User'
+  #         application/xml:
+  #           schema:
+  #             $ref: '#/components/schemas/User'
+  #         application/x-www-form-urlencoded:
+  #           schema:
+  #             $ref: '#/components/schemas/User'
+  #     responses:
+  #       default:
+  #         description: successful operation
+  #   delete:
+  #     tags:
+  #       - user
+  #     summary: Delete user
+  #     description: This can only be done by the logged in user.
+  #     operationId: deleteUser
+  #     parameters:
+  #       - name: username
+  #         in: path
+  #         description: The name that needs to be deleted
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       '400':
+  #         description: Invalid username supplied
+  #       '404':
+  #         description: User not found
