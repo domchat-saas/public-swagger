@@ -1,2 +1,2 @@
 
-Copyright (C) 2023 Lev Nazarov
+Copyright (C) 2023 ДомЧат
