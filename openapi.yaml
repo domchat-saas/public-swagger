@@ -9,32 +9,75 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.11
+  version: 1.0.1
 externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 # servers:
 #   - url: https://petstore3.swagger.io/api/v3
 tags:
-  - name: FeedService
-    description: Сервис для работы с лентой
-    externalDocs:
-      description: Документация
-      url: https://www.notion.so/FeedService-3044854f9ae64d34b9571d16beea90a7
+  # - name: FeedService
+  #   description: Сервис для работы с лентой
+  #   externalDocs:
+  #     description: Документация
+  #     url: https://www.notion.so/FeedService-3044854f9ae64d34b9571d16beea90a7
+  - name: HomeService
+    description: Сервис для работы с домом
   - name: ChatService
     description: Сервис для работы с чатом
+  - name: AuthService
+    description: Сервис для авторизации
+  - name: ProfileService
+    description: Сервис для изменения профиля
 paths:
-  /chat/getChatMetadata:
-    get:
+  /profile/deleteUser:
+    delete:
       tags:
-        - ChatService
-      summary: Возвращает метаданные чата
-      operationId: getChatMetadata
+        - ProfileService
+      summary: Удаляет пользователя и все его данные
+      operationId: deleteUser
+      responses:
+        '200':
+          description: Успешное выполнение
+  /profile/setUserInfo:
+    post:
+      tags:
+        - ProfileService
+      summary: Обновляет данные пользователя
+      operationId: setUserInfo
+      parameters:
+        - name: name
+          in: query
+          description: Имя пользователя
+          schema:
+            type: string
+        - name: avatar
+          in: query
+          description: Аватар пользователя
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешное выполнение
+  /auth/anonAuth:
+    post:
+      tags:
+        - AuthService
+      summary: Анонимная регистрация/авторизация
+      operationId: anonAuth
+      responses:
+        '200':
+          description: Успешное выполнение
+  /home/setRole:
+    post:
+      tags: 
+        - HomeService
+      summary: Устанавливает роль в этом доме
+      operationId: setRole
       parameters:
         - name: houseGuid
           in: query
           description: Идентификатор дома
-          required: true
           schema:
             type: string
             format: uuid
@@ -45,23 +88,139 @@ paths:
           content:
             application/json:
               schema:
+                $ref: '#/components/schemas/ChatUser'
+  /home/getCheckedInHouseList:
+    get:
+      tags:
+        - HomeService
+      summary: Возвращает список домов, в которых пользователь отметился
+      operationId: getCheckedInHouseList
+      responses:
+        '200':
+          description: Успешное выполнение
+          content:
+            application/json:
+              schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ChatMetadata'    
+                  $ref: '#/components/schemas/HouseMetadata'
+  /home/checkIn:
+    post:
+      tags:
+        - HomeService
+      summary: Отметить себя в доме. С этого момента отчитывается количество непрочтенных сообщений
+      operationId: checkIn
+      parameters:
+        - name: houseGuid
+          in: query
+          description: Идентификатор дома
+          schema:
+            type: string
+            format: uuid
+          example: 5e5e2958-3056-4255-91f7-4c4b47118013
+      responses:
+        '200':
+          description: Успешное выполнение
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/HouseMetadata'
+  /home/uncheck:
+    post:
+      tags:
+        - HomeService
+      summary: Убрать отметку себя в доме
+      operationId: uncheck
+      parameters:
+        - name: houseGuid
+          in: query
+          description: Идентификатор дома
+          schema:
+            type: string
+            format: uuid
+          example: 5e5e2958-3056-4255-91f7-4c4b47118013
+      responses:
+        '200':
+          description: Успешное выполнение
+  /home/getMetaData:
+    get:
+      tags:
+        - HomeService
+      summary: Возвращает метаданные дома
+      description: Требует либо houseAddress, либо houseGuid
+      operationId: getMetaData
+      parameters:
+        - name: houseAddress
+          in: query
+          description: Адрес дома. Требуется максимальное количество информации. Сепаратор - запятая
+          schema:
+            type: string
+          example: 127521, Российская Федерация, г Москва, г Москва, ул Октябрьская, д. 58
+        - name: houseGuid
+          in: query
+          description: Идентификатор дома
+          schema:
+            type: string
+            format: uuid
+          example: 5e5e2958-3056-4255-91f7-4c4b47118013
+      responses:
+        '200':
+          description: Успешное выполнение
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/HouseMetadata'
+  /chat/checkMessageList:
+    post:
+      tags:
+        - ChatService
+      summary: Отмечает сообщения прочтенными
+      operationId: checkMessageList
+      parameters:
+        - name: chatGuid
+          in: query
+          description: Идентификатор чата
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 5e5e2958-3056-4255-91f7-4c4b47118013
+        - name: messageGuidList
+          in: query
+          description: Список сообщений на отметку
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+        
+      responses:
+        '200':
+          description: Успешное выполнение
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChatMessage'    
         '401':
           description: Требуется перезаход
         '403':
           description: Нет доступа к этому дому
-  /chat/getMessages:
+            
+        
+  /chat/getMessageList:
     get:
       tags:
         - ChatService
       summary: Возвращает список сообщений в чате
       operationId: getMessages
       parameters:
-        - name: houseGuid
+        - name: chatGuid
           in: query
-          description: Идентификатор дома
+          description: Идентификатор чата
           required: true
           schema:
             type: string
@@ -104,9 +263,9 @@ paths:
       summary: Создает сообщение в чате
       operationId: createMessage
       parameters:
-        - name: houseGuid
+        - name: chatGuid
           in: query
-          description: Идентификатор дома
+          description: Идентификатор чата
           required: true
           schema:
             type: string
@@ -130,6 +289,8 @@ paths:
           description: "Требуется перезаход"
         '403':
           description: "Нет доступа к ресурсу"
+        '405':
+          description: "Пользователь не отметился в доме"
   /chat/updateMessage:
     patch:
       tags:
@@ -137,9 +298,9 @@ paths:
       summary: Редактирует сообщение в чате
       operationId: updateMessage
       parameters:
-        - name: houseGuid
+        - name: chatGuid
           in: query
-          description: Идентификатор дома
+          description: Идентификатор чата
           required: true
           schema:
             type: string
@@ -171,6 +332,8 @@ paths:
           description: "Требуется перезаход"
         '403':
           description: "Нет доступа к ресурсу"
+        '405':
+          description: "Пользователь не отметился в доме"
   /chat/deleteMessage:
     delete:
       tags:
@@ -178,9 +341,9 @@ paths:
       summary: Удаляет сообщение в чате
       operationId: deleteMessage
       parameters:
-        - name: houseGuid
+        - name: chatGuid
           in: query
-          description: Идентификатор дома
+          description: Идентификатор чата
           required: true
           schema:
             type: string
@@ -201,6 +364,8 @@ paths:
           description: "Требуется перезаход"
         '403':
           description: "Нет доступа к ресурсу"
+        '405':
+          description: "Пользователь не отметился в доме"
         
   # /feed/getFeedPreviews:
   #   get:
@@ -248,6 +413,42 @@ paths:
   #         description: "Нет доступа к ресурсу"
 components:
   schemas:
+    HouseChat:
+      type: object
+      properties:
+        guid:
+          type: string
+          format: uuid
+          description: Идентификатор чата
+        name:
+          type: string
+          description: Название чата
+        uncheckedMessageCount:
+          type: integer
+          minimum: 0
+          description: Количество непрочтенных сообщений
+        requiresCheckIn:
+          type: boolean
+          description: Пользователь должен отметиться в доме, чтобы писать в этот чат
+    HouseMetadata:
+      type: object
+      properties:
+        guid:
+          type: string
+          format: uuid
+          description: Идентификатор дома
+        address:
+          type: string
+          description: Адрес
+        checkedIn:
+          type: boolean
+          description: Пользователь отметился в доме
+        chats:
+          type: array
+          description: Список чатов в доме
+          items:
+            $ref: '#/components/schemas/HouseChat'
+        
     ChatUser:
       type: object
       properties:
