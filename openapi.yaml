@@ -13,6 +13,12 @@ info:
 externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
+
+servers:
+  - url: http://127.0.0.1:8089/
+    description: HomeService
+  - url: http://127.0.0.1:8090/
+    description: AuthService
 # servers:
 #   - url: https://petstore3.swagger.io/api/v3
 tags:
@@ -70,7 +76,7 @@ paths:
           description: Успешное выполнение
   /home/setRole:
     post:
-      tags: 
+      tags:
         - HomeService
       summary: Устанавливает роль в этом доме
       operationId: setRole
@@ -82,6 +88,12 @@ paths:
             type: string
             format: uuid
           example: 5e5e2958-3056-4255-91f7-4c4b47118013
+        - name: role
+          in: query
+          description: Название роли
+          schema:
+            type: string
+          example: Слесарь
       responses:
         '200':
           description: Успешное выполнение
@@ -195,7 +207,7 @@ paths:
             items:
               type: string
               format: uuid
-        
+
       responses:
         '200':
           description: Успешное выполнение
@@ -204,13 +216,13 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ChatMessage'    
+                  $ref: '#/components/schemas/ChatMessage'
         '401':
           description: Требуется перезаход
         '403':
           description: Нет доступа к этому дому
-            
-        
+
+
   /chat/getMessageList:
     get:
       tags:
@@ -242,7 +254,7 @@ paths:
             type: integer
             minimum: 10
           example: 10
-        
+
       responses:
         '200':
           description: Успешное выполнение
@@ -251,7 +263,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ChatMessage'    
+                  $ref: '#/components/schemas/ChatMessage'
         '401':
           description: Требуется перезаход
         '403':
@@ -284,7 +296,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ChatMessage'          
+                $ref: '#/components/schemas/ChatMessage'
         '401':
           description: "Требуется перезаход"
         '403':
@@ -327,7 +339,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ChatMessage'          
+                $ref: '#/components/schemas/ChatMessage'
         '401':
           description: "Требуется перезаход"
         '403':
@@ -359,14 +371,14 @@ paths:
           example: 5e5e2958-3056-4255-91f7-4c4b47118013
       responses:
         '200':
-          description: Успешное выполнение         
+          description: Успешное выполнение
         '401':
           description: "Требуется перезаход"
         '403':
           description: "Нет доступа к ресурсу"
         '405':
           description: "Пользователь не отметился в доме"
-        
+
   # /feed/getFeedPreviews:
   #   get:
   #     tags:
@@ -397,7 +409,7 @@ paths:
   #         schema:
   #           type: integer
   #         example: 10
-        
+
   #     responses:
   #       '200':
   #         description: Успешное выполнение
@@ -406,7 +418,7 @@ paths:
   #             schema:
   #               type: array
   #               items:
-  #                 $ref: '#/components/schemas/FeedPreview'          
+  #                 $ref: '#/components/schemas/FeedPreview'
   #       '401':
   #         description: "Требуется перезаход"
   #       '403':
@@ -448,7 +460,7 @@ components:
           description: Список чатов в доме
           items:
             $ref: '#/components/schemas/HouseChat'
-        
+
     ChatUser:
       type: object
       properties:
@@ -480,7 +492,7 @@ components:
     ChatMessage:
       type: object
       properties:
-        guid: 
+        guid:
           type: string
           format: uuid
           description: Идентификатор сообщения
@@ -488,7 +500,7 @@ components:
           nullable: true
           allOf:
           - $ref: '#/components/schemas/ChatUser'
-        text: 
+        text:
           type: string
           description: Текст сообщения
         updated_at:
@@ -783,7 +795,7 @@ components:
   #             schema:
   #               type: array
   #               items:
-  #                 $ref: '#/components/schemas/Pet'          
+  #                 $ref: '#/components/schemas/Pet'
   #           application/xml:
   #             schema:
   #               type: array
@@ -816,7 +828,7 @@ components:
   #         content:
   #           application/json:
   #             schema:
-  #               $ref: '#/components/schemas/Pet'          
+  #               $ref: '#/components/schemas/Pet'
   #           application/xml:
   #             schema:
   #               $ref: '#/components/schemas/Pet'
@@ -992,7 +1004,7 @@ components:
   #         content:
   #           application/json:
   #             schema:
-  #               $ref: '#/components/schemas/Order'          
+  #               $ref: '#/components/schemas/Order'
   #           application/xml:
   #             schema:
   #               $ref: '#/components/schemas/Order'
@@ -1068,7 +1080,7 @@ components:
   #         content:
   #           application/json:
   #             schema:
-  #               $ref: '#/components/schemas/User'          
+  #               $ref: '#/components/schemas/User'
   #           application/xml:
   #             schema:
   #               $ref: '#/components/schemas/User'
@@ -1148,7 +1160,7 @@ components:
   #         content:
   #           application/json:
   #             schema:
-  #               $ref: '#/components/schemas/User'          
+  #               $ref: '#/components/schemas/User'
   #           application/xml:
   #             schema:
   #               $ref: '#/components/schemas/User'
