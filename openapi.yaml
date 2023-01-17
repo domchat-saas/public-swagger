@@ -19,6 +19,8 @@ servers:
     description: HomeService
   - url: http://127.0.0.1:8090/
     description: AuthService
+  - url: http://127.0.0.1:8092
+    description: ChatService
 # servers:
 #   - url: https://petstore3.swagger.io/api/v3
 tags:
@@ -512,6 +514,9 @@ components:
           type: string
           format: date
           description: Дата создания
+        checked:
+          type: boolean
+          description: Просмотрено пользователем
   #   FeedPreview:
   #     type: object
   #     required:
