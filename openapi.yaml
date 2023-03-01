@@ -21,6 +21,8 @@ servers:
     description: AuthService
   - url: http://127.0.0.1:8092
     description: ChatService
+  - url: http://127.0.0.1:8093
+    description: GeoService
 # servers:
 #   - url: https://petstore3.swagger.io/api/v3
 tags:
@@ -37,6 +39,8 @@ tags:
     description: Сервис для авторизации
   - name: ProfileService
     description: Сервис для изменения профиля
+  - name: GeoService
+    description: Сервис для работы с геолокацией и городами
 paths:
   /profile/deleteUser:
     delete:
@@ -64,9 +68,68 @@ paths:
           description: Аватар пользователя
           schema:
             type: string
+        - name: region
+          in: query
+          description: Регион пользователя
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: Успешное выполнение
+  /profile/getUserAgreements:
+    get:
+      tags:
+        - ProfileService
+      summary: Получает статус пользовательских соглашений
+      operationId: getUserAgreements
+      responses:
+        '200':
+          description: "Успешное выполнение"
+          content:
+            application/json:
+              schema:
+                properties:
+                  currentPrivacyPolicyVersion:
+                    type: integer
+                  targetPrivacyPolicyVersion:
+                    type: integer
+                  currentTermsOfServiceVersion:
+                    type: integer
+                  targetTermsOfServiceVersion:
+                    type: integer
+                  privacyPolicyLink:
+                    type: string
+                    format: url
+                  termsOfServiceLink:
+                    type: string
+                    format: url
+        '401':
+          description: "Требуется авторизация"
+  /profile/agree:
+    post:
+      tags:
+      - ProfileService
+      summary: Соглашается с правилами
+      operationId: agree
+      parameters:
+        - name: privacyPolicyVersion
+          in: query
+          description: Версия политики конфиденциальности
+          schema:
+            type: integer
+        - name: termsOfServiceVersion
+          in: query
+          description: Версия правил использования
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: "Успешное выполнение"
+        '401':
+          description: "Требуется авторизация"
+        '403':
+          description: "Требуется повторная проверка, версии поменялись"
   /auth/anonAuth:
     post:
       tags:
@@ -223,8 +286,6 @@ paths:
           description: Требуется перезаход
         '403':
           description: Нет доступа к этому дому
-
-
   /chat/getMessageList:
     get:
       tags:
@@ -373,60 +434,47 @@ paths:
           example: 5e5e2958-3056-4255-91f7-4c4b47118013
       responses:
         '200':
-          description: Успешное выполнение
+          description: "Успешное выполнение"
         '401':
           description: "Требуется перезаход"
         '403':
           description: "Нет доступа к ресурсу"
         '405':
           description: "Пользователь не отметился в доме"
-
-  # /feed/getFeedPreviews:
-  #   get:
-  #     tags:
-  #       - feed
-  #     summary: Возвращает список превью объявлений
-  #     operationId: getFeedPreviews
-  #     parameters:
-  #       - name: feedListGuid
-  #         in: query
-  #         description: Идентификатор группы объявлений
-  #         required: true
-  #         explode: true
-  #         schema:
-  #           type: string
-  #           format: uuid
-  #         example: 5e5e2958-3056-4255-91f7-4c4b47118013
-  #       - name: limit
-  #         in: query
-  #         description: Ограничение
-  #         required: true
-  #         schema:
-  #           type: integer
-  #         example: 10
-  #       - name: offset
-  #         in: query
-  #         description: Отступ
-  #         required: true
-  #         schema:
-  #           type: integer
-  #         example: 10
-
-  #     responses:
-  #       '200':
-  #         description: Успешное выполнение
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: array
-  #               items:
-  #                 $ref: '#/components/schemas/FeedPreview'
-  #       '401':
-  #         description: "Требуется перезаход"
-  #       '403':
-  #         description: "Нет доступа к ресурсу"
+  /geo/getCityList:
+    get:
+      tags:
+      - GeoService
+      summary: Получает геолоку юзера и список городов
+      operationId: getCityList
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: 
+                  city:
+                    $ref: '#/components/schemas/City'
+                  list:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/City'
+          description: "Успешное выполнение"
+        '401':
+          description: "Требуется авторизация"
 components:
   schemas:
+    City:
+      type: object
+      properties:
+        guid:
+          type: string
+          format: uuid
+          description: Идентификатор города
+        name:
+          type: string
+          description: Название города
+          example: "Москва и Московская область"
     HouseChat:
       type: object
       properties:
@@ -462,7 +510,6 @@ components:
           description: Список чатов в доме
           items:
             $ref: '#/components/schemas/HouseChat'
-
     ChatUser:
       type: object
       properties:
