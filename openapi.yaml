@@ -31,6 +31,8 @@ tags:
   #   externalDocs:
   #     description: Документация
   #     url: https://www.notion.so/FeedService-3044854f9ae64d34b9571d16beea90a7
+  - name: AgreementService
+    description: Сервис для работы с соглашениями
   - name: HomeService
     description: Сервис для работы с домом
   - name: ChatService
@@ -42,6 +44,32 @@ tags:
   - name: GeoService
     description: Сервис для работы с геолокацией и городами
 paths:
+  /agreement/getAgreements:
+    get:
+      tags:
+        - AgreementService
+      summary: Получает статус соглашений
+      operationId: getAgreements
+      responses:
+        '200':
+          description: Успешное выполнение
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agreements'
+        '401':
+          description: "Требуется авторизация"
+  /agreement/acceptAgreements:
+    post:
+      tags:
+        - AgreementService
+      summary: Обновляет статус соглашения. Отправляется только при соглашении с политикой конфиденциальности и правилами использования
+      operationId: acceptAgreements
+      responses:
+        '200':
+          description: Успешное выполнение
+        '401':
+          description: "Требуется авторизация"
   /profile/deleteUser:
     delete:
       tags:
@@ -51,6 +79,8 @@ paths:
       responses:
         '200':
           description: Успешное выполнение
+        '401':
+          description: "Требуется авторизация"
   /profile/setUserInfo:
     post:
       tags:
@@ -77,6 +107,8 @@ paths:
       responses:
         '200':
           description: Успешное выполнение
+        '401':
+          description: "Требуется авторизация"
   /profile/getUserAgreements:
     get:
       tags:
@@ -464,6 +496,21 @@ paths:
           description: "Требуется авторизация"
 components:
   schemas:
+    Agreements:
+      type: object
+      properties:
+        shouldShowPrivacyPolicy:
+          type: boolean
+          description: Нужно ли показывать политику конфиденциальности
+        privacyPolicyLink:
+          type: string
+          description: Ссылка на политику конфиденциальности
+        shouldShowTermsOfService:
+          type: boolean
+          description: Нужно ли показывать правила использования
+        termsOfServiceLink:
+          type: string
+          description: Ссылка на правила использования
     City:
       type: object
       properties:
